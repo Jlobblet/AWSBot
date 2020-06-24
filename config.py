@@ -1,0 +1,3 @@
+CONFIG = {
+    "token": "{secret-token}",
+}
