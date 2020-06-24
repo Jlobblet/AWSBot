@@ -4,8 +4,6 @@ import json
 import botocore
 import boto3
 
-from config import CONFIG
-
 param_loc = "friendly_name_table.json"
 
 if __name__ == "__main__":
@@ -16,8 +14,6 @@ if __name__ == "__main__":
         table_params = json.load(json_file)
     print("...loaded")
 
-    # Override TableName to match the one in CONFIG
-    table_params["TableName"] = CONFIG.table
     print("Creating new table...")
     table = dynamodb.create_table(**table_params)
     table.meta.client.get_waiter("table_exists").wait(

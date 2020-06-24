@@ -18,10 +18,6 @@
 		{
 			"KeyType": "HASH",
 			"AttributeName": "FriendlyName"
-		},
-		{
-			"KeyType": "RANGE",
-			"AttributeName": "InstanceID"
 		}
 	],
 	"ProvisionedThroughput": {
