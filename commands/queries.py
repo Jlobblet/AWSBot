@@ -21,6 +21,7 @@ class Queries(commands.Cog):
         )
         await ctx.send(response["Items"])
 
+    @commands.has_permissions(manage_guild=True)
     @commands.command(name="add")
     async def add(self, ctx: Context, FriendlyName, InstanceID):
         Item = {
@@ -29,6 +30,13 @@ class Queries(commands.Cog):
             "InstanceID": InstanceID,
         }
         self.table.put_item(Item=Item)
+
+    @commands.has_permissions(manage_guild=True)
+    @commands.command(name="remove")
+    async def remove(self, ctx: Context, FriendlyName):
+        self.table.delete_item(
+            Key={"GuildID": str(ctx.guild.id), "FriendlyName": FriendlyName}
+        )
 
 
 def setup(bot: Bot):
