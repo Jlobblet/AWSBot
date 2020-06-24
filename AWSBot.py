@@ -4,7 +4,7 @@ from discord.ext.commands import Bot, when_mentioned_or
 
 from config import CONFIG
 
-EXTENSIONS = ["commands.instances"]
+EXTENSIONS = ["commands.instances", "commands.queries"]
 
 bot = Bot(command_prefix=when_mentioned_or("%"))
 
