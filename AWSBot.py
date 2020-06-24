@@ -30,4 +30,4 @@ if __name__ == "__main__":
             exc = f"{type(e).__name__}: {e}"
             print(f"\nFailed to load extension {extension}: {exc}")
 
-    bot.run(CONFIG["token"])
+    bot.run(CONFIG.token)
