@@ -11,7 +11,7 @@ if __name__ == "__main__":
 
     print(f"Loading table parameters from {param_loc}...")
     with open(param_loc, "r") as json_file:
-        table_params = json.loads(json_file.read())
+        table_params = json.load(json_file)
     print("...loaded")
 
     print("Creating new table...")
