@@ -1,0 +1,49 @@
+{
+	"AttributeDefinitions": [
+		{
+			"AttributeName": "FriendlyName",
+			"AttributeType": "S"
+		},
+		{
+			"AttributeName": "InstanceID",
+			"AttributeType": "S"
+		},
+		{
+			"AttributeName": "GuildID",
+			"AttributeType": "S"
+		}
+	],
+	"TableName": "FriendlyNameTable",
+	"KeySchema": [
+		{
+			"KeyType": "HASH",
+			"AttributeName": "FriendlyName"
+		},
+		{
+			"KeyType": "RANGE",
+			"AttributeName": "InstanceID"
+		}
+	],
+	"ProvisionedThroughput": {
+		"WriteCapacityUnits": 5,
+		"ReadCapacityUnits": 5
+	},
+	"GlobalSecondaryIndexes": [
+		{
+			"IndexName": "Guild-index",
+			"Projection": {
+				"ProjectionType": "ALL"
+			},
+			"ProvisionedThroughput": {
+				"WriteCapacityUnits": 5,
+				"ReadCapacityUnits": 5
+			},
+			"KeySchema": [
+				{
+					"KeyType": "HASH",
+					"AttributeName": "GuildID"
+				}
+			]
+		}
+	]
+}
