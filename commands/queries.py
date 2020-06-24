@@ -5,7 +5,6 @@ from discord.ext import commands
 from discord.ext.commands import Context, Bot
 
 from config import CONFIG
-from utils.utils import get_instance
 
 
 class Queries(commands.Cog):
