@@ -16,8 +16,7 @@ async def on_ready():
 
 @bot.event
 async def on_message(message: Message):
-    if not message.author.bot:
-        await bot.process_commands(message)
+    await bot.process_commands(message)
 
 
 if __name__ == "__main__":
