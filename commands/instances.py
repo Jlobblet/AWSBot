@@ -1,6 +1,6 @@
+import asyncio
 import datetime
 import logging
-import time
 
 import botocore
 import boto3
@@ -43,7 +43,7 @@ class InstanceControl(commands.Cog):
 
     def wait_for_state(self, instance):
         while instance.state["Name"] not in ("running", "stopping"):
-            time.sleep(5)
+            asyncio.sleep(5)
             instance.load()
         return True
 
