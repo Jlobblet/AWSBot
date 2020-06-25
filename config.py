@@ -1,4 +1,4 @@
 class CONFIG:
     token = "{secret-token}"
     table = "FriendlyNameTable"
-    owner_id = "{owner-id}"
+    owner_id = {owner-id}
