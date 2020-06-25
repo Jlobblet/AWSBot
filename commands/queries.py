@@ -5,6 +5,7 @@ from discord.ext import commands
 from discord.ext.commands import Context, Bot
 
 from config import CONFIG
+from helptexts import HELPTEXTS
 
 
 class Queries(commands.Cog):
@@ -13,15 +14,21 @@ class Queries(commands.Cog):
         self.dynamodb = boto3.resource("dynamodb")
         self.table = self.dynamodb.Table(CONFIG.table)
 
-    @commands.command(name="show")
+    @commands.command(name="show", help=HELPTEXTS.SHOW.full, brief=HELPTEXTS.SHOW.brief)
     async def show(self, ctx: Context):
         response = self.table.query(
             KeyConditionExpression=Key("GuildID").eq(str(ctx.guild.id))
         )
         await ctx.send(response["Items"])
 
+    @commands.command(
+        name="describe", help=HELPTEXTS.DESCRIBE.full, brief=HELPTEXTS.DESCRIBE.brief
+    )
+    async def describe(self, ctx: Context, FriendlyName):
+        pass
+
     @commands.has_permissions(manage_guild=True)
-    @commands.command(name="add")
+    @commands.command(name="add", help=HELPTEXTS.ADD.full, brief=HELPTEXTS.ADD.brief)
     async def add(self, ctx: Context, FriendlyName, InstanceID):
         Item = {
             "GuildID": str(ctx.guild.id),
@@ -31,7 +38,9 @@ class Queries(commands.Cog):
         self.table.put_item(Item=Item)
 
     @commands.has_permissions(manage_guild=True)
-    @commands.command(name="remove")
+    @commands.command(
+        name="remove", help=HELPTEXTS.REMOVE.full, brief=HELPTEXTS.REMOVE.brief
+    )
     async def remove(self, ctx: Context, FriendlyName):
         self.table.delete_item(
             Key={"GuildID": str(ctx.guild.id), "FriendlyName": FriendlyName}

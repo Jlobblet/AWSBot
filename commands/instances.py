@@ -7,24 +7,8 @@ from discord.ext import commands
 from discord.ext.commands import Context, Bot
 
 from config import CONFIG
-
-
-def stop_instance(instance_id, ec2):
-    instance = get_instance(instance_id, ec2)
-    state = instance.state & int("11111111", 2)
-    if state == 16:
-        try:
-            response = instance.stop()
-            return response
-        except botocore.exceptions.ClientError as error:
-            print(error)
-            return error
-    else:
-        return None
-
-
-def describe_instance(instance_id, ec2=None):
-    instance = get_instance(instance_id, ec2)
+from helptexts import HELPTEXTS
+from utils.utils import get_instance_from_name
 
 
 class InstanceControl(commands.Cog):
@@ -33,18 +17,6 @@ class InstanceControl(commands.Cog):
         self.ec2 = boto3.resource("ec2")
         self.dynamodb = boto3.resource("dynamodb")
         self.table = self.dynamodb.Table(CONFIG.table)
-
-    def get_instance_from_name(self, ctx, instance_name):
-        item = self.table.get_item(
-            Key={"GuildID": str(ctx.guild.id), "FriendlyName": instance_name}
-        )["Item"]
-        instance_id = item["InstanceID"]
-        try:
-            instance = self.ec2.Instance(instance_id)
-            instance.load()
-            return instance
-        except botocore.exceptions.ClientError as error:
-            return None
 
     def get_os(self, tags):
         for tag in tags:
@@ -69,9 +41,11 @@ class InstanceControl(commands.Cog):
             instance.load()
         return True
 
-    @commands.command(name="start")
+    @commands.command(
+        name="start", help=HELPTEXTS.START.full, brief=HELPTEXTS.START.brief
+    )
     async def start_instance(self, ctx: Context, instance_name):
-        instance = self.get_instance_from_name(ctx, instance_name)
+        instance = get_instance_from_name(ctx, instance_name, self.ec2, self.table)
         if instance:
             if instance.state["Name"] == "stopped" and self.check_cooldown(instance):
                 await ctx.send(f"Starting {instance_name}...")
@@ -80,14 +54,14 @@ class InstanceControl(commands.Cog):
                 await ctx.send("...started")
             else:
                 await ctx.send(
-                    "The instance is either already stopped, or on cooldown."
+                    "The instance is either already running, or on cooldown."
                 )
         else:
             await ctx.send(f"Instance {instance_name} could not be found.")
 
-    @commands.command(name="stop")
+    @commands.command(name="stop", help=HELPTEXTS.STOP.full, brief=HELPTEXTS.STOP.brief)
     async def stop_instance(self, ctx: Context, instance_name):
-        instance = self.get_instance_from_name(ctx, instance_name)
+        instance = get_instance_from_name(ctx, instance_name, self.ec2, self.table)
         if instance:
             if instance.state["Name"] == "running":
                 await ctx.send(f"Stopping {instance_name}...")
