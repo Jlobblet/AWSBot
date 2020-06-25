@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import logging
+
 from discord import Message
 from discord.ext.commands import Bot, when_mentioned_or
 
@@ -11,7 +13,7 @@ bot = Bot(command_prefix=when_mentioned_or("%"))
 
 @bot.event
 async def on_ready():
-    print("Logged in as", str(bot.user), "==========", sep="\n")
+    logging.info(f"Logged in as {str(bot.user)}")
 
 
 @bot.event
@@ -22,11 +24,11 @@ async def on_message(message: Message):
 if __name__ == "__main__":
     for extension in EXTENSIONS:
         try:
-            print(f"Attempting to load {extension}", end="")
+            logging.info(f"Attempting to load {extension}", end="")
             bot.load_extension(extension)
-            print("...done")
+            logging.info("...done")
         except Exception as e:
             exc = f"{type(e).__name__}: {e}"
-            print(f"\nFailed to load extension {extension}: {exc}")
+            logging.error(f"\nFailed to load extension {extension}: {exc}")
 
     bot.run(CONFIG.token)

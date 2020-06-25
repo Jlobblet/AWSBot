@@ -1,4 +1,5 @@
 import datetime
+import logging
 import time
 
 import botocore
@@ -29,6 +30,11 @@ class InstanceControl(commands.Cog):
         launch_time = instance.launch_time.replace(tzinfo=None)
         now = datetime.datetime.now().replace(tzinfo=None)
         delta = now - launch_time
+        logging.debug(f"Cooldown information for {instance.instance_id}:")
+        logging.debug(f"now        : {now}")
+        logging.debug(f"launch_time: {launch_time}")
+        logging.debug(f"delta      : {delta}")
+        logging.debug(f"os         : {os}")
         if os == "linux" and delta > datetime.timedelta(minutes=1):
             return True
         elif delta > datetime.timedelta(hours=1):
@@ -45,32 +51,46 @@ class InstanceControl(commands.Cog):
         name="start", help=HELPTEXTS.START.full, brief=HELPTEXTS.START.brief
     )
     async def start_instance(self, ctx: Context, instance_name):
+        logging.info(f"Start called on {instance_name}")
         instance = get_instance_from_name(ctx, instance_name, self.ec2, self.table)
         if instance:
+            logging.info(f"{instance.instance_id}")
+            logging.debug(instance.state["Name"])
             if instance.state["Name"] == "stopped" and self.check_cooldown(instance):
+                logging.info("Starting instance...")
                 await ctx.send(f"Starting {instance_name}...")
                 instance.start()
                 self.wait_for_state(instance)
+                logging.info("Started")
                 await ctx.send("...started")
             else:
+                logging.info("Start checks failed, not starting")
                 await ctx.send(
                     "The instance is either already running, or on cooldown."
                 )
         else:
+            logging.info("Instance not found.")
             await ctx.send(f"Instance {instance_name} could not be found.")
 
     @commands.command(name="stop", help=HELPTEXTS.STOP.full, brief=HELPTEXTS.STOP.brief)
     async def stop_instance(self, ctx: Context, instance_name):
+        logging.info(f"Stop called on {instance_name}")
         instance = get_instance_from_name(ctx, instance_name, self.ec2, self.table)
         if instance:
+            logging.info(f"{instance.instance_id}")
+            logging.debug(instance.state["Name"])
             if instance.state["Name"] == "running":
+                logging.info("Stopping instance...")
                 await ctx.send(f"Stopping {instance_name}...")
                 instance.stop()
                 self.wait_for_state(instance)
+                logging.info("...stopped")
                 await ctx.send("...stopped")
             else:
+                logging.info("Already stopped")
                 await ctx.send("It's already stopped, silly!")
         else:
+            logging.info("Instance not found")
             await ctx.send(f"Instance {instance_name} could not be found.")
 
 
