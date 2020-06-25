@@ -6,11 +6,13 @@ from discord.ext.commands import Context, Bot
 
 from config import CONFIG
 from helptexts import HELPTEXTS
+from utils.utils import user_is_me
 
 
 class Queries(commands.Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
+        self.ec2 = boto3.resource("ec2")
         self.dynamodb = boto3.resource("dynamodb")
         self.table = self.dynamodb.Table(CONFIG.table)
 
@@ -27,7 +29,7 @@ class Queries(commands.Cog):
     async def describe(self, ctx: Context, FriendlyName):
         pass
 
-    @commands.has_permissions(manage_guild=True)
+    @commands.check(user_is_me)
     @commands.command(name="add", help=HELPTEXTS.ADD.full, brief=HELPTEXTS.ADD.brief)
     async def add(self, ctx: Context, FriendlyName, InstanceID):
         Item = {
@@ -37,7 +39,7 @@ class Queries(commands.Cog):
         }
         self.table.put_item(Item=Item)
 
-    @commands.has_permissions(manage_guild=True)
+    @commands.check(user_is_me)
     @commands.command(
         name="remove", help=HELPTEXTS.REMOVE.full, brief=HELPTEXTS.REMOVE.brief
     )
