@@ -7,10 +7,8 @@ from config import CONFIG
 
 
 def get_instance_from_name(ctx, instance_name, ec2=None, table=None):
-    if not ec2:
-        ec2 = boto3.resource("ec2")
-    if not table:
-        table = boto3.resource("dynamodb").Table(CONFIG.table)
+    ec2 = ec2 or boto3.resource("ec2")
+    table = table or boto3.resource("dynamodb").Table(CONFIG.table)
     item = table.get_item(
         Key={"GuildID": str(ctx.guild.id), "FriendlyName": instance_name}
     )["Item"]
